@@ -56,6 +56,9 @@ module System.Hardware.WiringPi
     -- * Interrupt functions
     -- | See <http://wiringpi.com/reference/priority-interrupts-and-threads/ Priority, Interrupts and Threads>.
   , wiringPiISR
+  , wpiI2CSetup
+  , wpiI2CReadReg8
+  , wpiI2CWriteReg8
   ) where
 
 import Control.Applicative
@@ -81,6 +84,8 @@ data Pin = Wpi Int   -- ^ use <https://pinout.xyz/pinout/wiringpi wiringPi pin n
                      --   and on <https://pinout.xyz/ pinout.xyz>).
          | Phys Int  -- ^ use physical pin numbers on P1 connector
   deriving (Show, Read)
+
+type I2CDev = Int
 
 instance Ord Pin where
   compare = comparing pinToBcmGpio
@@ -249,3 +254,12 @@ chkRange :: Int -> Maybe Int
 chkRange n
   | n >= 0 && n < 64 = Just n
   | otherwise = Nothing
+
+wpiI2CSetup :: Int -> IO I2CDev
+wpiI2CSetup addr = fromIntegral <$> c_wiringPiI2CSetup (fromIntegral addr)
+
+wpiI2CReadReg8 :: I2CDev -> Int -> IO Int
+wpiI2CReadReg8 fd reg = fromIntegral <$> c_wiringPiI2CReadReg8 (fromIntegral fd) (fromIntegral reg)
+
+wpiI2CWriteReg8 :: I2CDev -> Int -> Int -> IO Int
+wpiI2CWriteReg8 fd reg dt = fromIntegral <$> c_wiringPiI2CWriteReg8 (fromIntegral fd) (fromIntegral reg) (fromIntegral dt)

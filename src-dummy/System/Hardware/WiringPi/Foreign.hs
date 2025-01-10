@@ -19,6 +19,11 @@ module System.Hardware.WiringPi.Foreign
   , c_physPinToGpio
   , mkWiringPiISRCallback
   , c_wiringPiISR
+  , c_wiringPiI2CSetup
+  , c_wiringPiI2CReadReg8
+  , c_wiringPiI2CReadReg16
+  , c_wiringPiI2CWriteReg8
+  , c_wiringPiI2CWriteReg16
   ) where
 
 import Foreign.C.Types ( CInt(..), CUInt(..) )
@@ -114,3 +119,33 @@ c_wiringPiISR :: CInt
               -> FunPtr (IO ())
               -> IO CInt
 c_wiringPiISR = undefined
+
+c_wiringPiI2CSetup :: CInt
+                   -> IO CInt
+c_wiringPiI2CSetup = undefined
+
+c_wiringPiI2CReadReg8 ::
+  CInt ->
+  CInt ->
+  IO CInt
+c_wiringPiI2CReadReg8 = undefined
+
+c_wiringPiI2CReadReg16 ::
+  CInt ->
+  CInt ->
+  IO CInt
+c_wiringPiI2CReadReg16 = undefined
+
+c_wiringPiI2CWriteReg8 ::
+  CInt ->
+  CInt ->
+  CInt ->
+  IO CInt
+c_wiringPiI2CWriteReg8 = undefined
+
+c_wiringPiI2CWriteReg16 ::
+  CInt ->
+  CInt ->
+  CInt ->
+  IO CInt
+c_wiringPiI2CWriteReg16 = undefined
