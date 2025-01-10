@@ -66,11 +66,14 @@ import Control.Exception ( evaluate )
 import Control.Monad ( when )
 import Data.Ord ( comparing )
 import Data.Word ( Word8, Word16 )
-import Foreign.C.Types ( CInt(..) )
+import Foreign.C.Types ( CInt(..) , CUChar(..), CUInt (CUInt) )
+import Foreign.Ptr ( Ptr )
 import System.IO.Unsafe ( unsafePerformIO )
 
 import System.Hardware.WiringPi.Enums
 import System.Hardware.WiringPi.Foreign
+import Foreign (mallocArray, peekArray, withArray)
+import Foreign.Marshal.Alloc ( free )
 
 -- | Represents a <http://wiringpi.com/pins/ pin number>.
 -- The constructor determines which one of the three
@@ -263,3 +266,19 @@ wpiI2CReadReg8 fd reg = fromIntegral <$> c_wiringPiI2CReadReg8 (fromIntegral fd)
 
 wpiI2CWriteReg8 :: I2CDev -> Int -> Int -> IO Int
 wpiI2CWriteReg8 fd reg dt = fromIntegral <$> c_wiringPiI2CWriteReg8 (fromIntegral fd) (fromIntegral reg) (fromIntegral dt)
+
+wpiI2CReadBlockData :: I2CDev -> Int -> Int -> IO [Word8]
+wpiI2CReadBlockData fd reg size = do
+  arrayPtr <- mallocArray size :: IO (Ptr CUChar)
+  _ <- c_wiringPiI2CReadBlockData (fromIntegral fd) (fromIntegral reg) arrayPtr (fromIntegral size)
+  dt <- peekArray size arrayPtr
+  free arrayPtr
+  return $ map fromIntegral dt
+
+wpiI2CWriteBlockData :: I2CDev -> Int -> [Word8] -> IO Int
+wpiI2CWriteBlockData fd reg dt = do
+  let arr :: [CUChar]
+      arr = map fromIntegral dt
+      size = length arr
+  withArray arr $ \ptr -> do
+    fromIntegral <$> c_wiringPiI2CWriteBlockData (fromIntegral fd) (fromIntegral reg) ptr (fromIntegral size)

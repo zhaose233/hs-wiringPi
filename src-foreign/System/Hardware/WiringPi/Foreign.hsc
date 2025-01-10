@@ -26,10 +26,12 @@ module System.Hardware.WiringPi.Foreign
   , c_wiringPiI2CReadReg16
   , c_wiringPiI2CWriteReg8
   , c_wiringPiI2CWriteReg16
+  , c_wiringPiI2CReadBlockData
+  , c_wiringPiI2CWriteBlockData
   ) where
 
-import Foreign.C.Types ( CInt(..), CUInt(..) )
-import Foreign.Ptr ( FunPtr )
+import Foreign.C.Types ( CInt(..), CUInt(..), CUChar(..) )
+import Foreign.Ptr ( FunPtr , Ptr)
 import System.Hardware.WiringPi.Enums
 
 #include <wiringPi.h>
@@ -150,3 +152,17 @@ foreign import ccall "wiringPiI2C.h wiringPiI2CWriteReg16"
                             -> CInt
                             -> CInt
                             -> IO CInt
+
+foreign import ccall "wiringPiI2C.h wiringPiI2CReadBlockData"
+    c_wiringPiI2CReadBlockData :: CInt
+                               -> CInt
+                               -> Ptr CUChar
+                               -> CUChar
+                               -> IO CInt
+
+foreign import ccall "wiringPiI2C.h wiringPiI2CWriteBlockData"
+    c_wiringPiI2CWriteBlockData :: CInt
+                                -> CInt
+                                -> Ptr CUChar
+                                -> CUChar
+                                -> IO CInt
